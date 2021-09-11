@@ -3,13 +3,13 @@ package TimeRecordMicroservice.Donald.model;
 import javax.persistence.*;
 import java.util.Objects;
 
-//@Embeddable
-@Entity
+//@Entity
+@Embeddable
 public class User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(unique = true, nullable = false)
+    //@Column(unique = true)
+    /*@Id
+    @GeneratedValue(strategy = GenerationType.AUTO)*/
     private Long id;
 
     public User() {

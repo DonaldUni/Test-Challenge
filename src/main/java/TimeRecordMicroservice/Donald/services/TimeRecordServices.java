@@ -56,7 +56,6 @@ public class TimeRecordServices {
             }
         }
 
-
         newTimeRecord.setFinalized(false);
         return timeRecordRepository.save(newTimeRecord);
     }
@@ -80,6 +79,9 @@ public class TimeRecordServices {
 
                 }
                 savedUpdatedTimeRecord = timeRecordRepository.save(timeRecord);
+            }else{
+
+                savedUpdatedTimeRecord = timeRecord;
             }
         }else{
 

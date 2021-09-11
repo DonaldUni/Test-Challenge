@@ -1,5 +1,7 @@
 package TimeRecordMicroservice.Donald.model;
 
+import org.hibernate.annotations.Cascade;
+
 import javax.persistence.*;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -10,14 +12,14 @@ import java.util.Objects;
 public class TimeRecord {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    //@Embedded
+    /*@ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "userId", referencedColumnName = "id")*/
     //@AttributeOverrides({})
-    //@AttributeOverride( name = "id", column = @Column(name = "userId"))
-    @ManyToOne()
-    @JoinColumn(name = "userId", referencedColumnName = "id", nullable = false)
+    @Embedded
+    @AttributeOverride( name = "id", column = @Column(name = "userId"))
     private User user;
 
     @Column(nullable = false)
@@ -30,7 +32,7 @@ public class TimeRecord {
     private LocalTime ending;
 
 
-    private transient float hours = calculateHours();
+    private transient float hours;
 
     @Column(nullable = false)
     private TimeType type;
@@ -41,6 +43,16 @@ public class TimeRecord {
 
     public TimeRecord() { }
 
+    public TimeRecord(User user, LocalDate date, LocalTime starting, LocalTime ending, TimeType type, boolean finalized) {
+        this.user = user;
+        this.date = date;
+        this.starting = starting;
+        this.ending = ending;
+        this.type = type;
+        this.finalized = finalized;
+        hours = calculateHours();
+    }
+
     public TimeRecord(Long id, User user, LocalDate date, LocalTime starting, LocalTime ending, TimeType type, boolean finalized) {
         this.id = id;
         this.user = user;
@@ -49,7 +61,6 @@ public class TimeRecord {
         this.ending = ending;
         this.type = type;
         this.finalized = finalized;
-
         hours = calculateHours();
     }
 

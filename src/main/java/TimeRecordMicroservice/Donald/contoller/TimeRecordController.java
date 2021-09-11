@@ -23,7 +23,7 @@ public class TimeRecordController {
     @Autowired
     private TimeRecordServices timeRecordServices;
 
-    @GetMapping  //TODO to fill in
+    @GetMapping
     private List<TimeRecord> getAllTimeRecords(@RequestParam Optional<TimeType> type, @RequestParam Optional<Boolean> finalized){ // TODO verify the availability with Postman
 
         boolean isTypePresent = false;
@@ -38,6 +38,12 @@ public class TimeRecordController {
         }
         if(finalized.isPresent()){
             isFinalisedPresent = true;
+        }
+
+
+        if (!isTypePresent && !isFinalisedPresent){
+
+            resultTimeRecords = timeRecordServices.findAllTimeRecordsByExample(example);
         }
 
 
@@ -65,8 +71,6 @@ public class TimeRecordController {
     //TODO verify the availability with Postman, when the id do not exist, the result has to be null
     @GetMapping(path = "/of/{userId}")
     private List<TimeRecord> getTimeRecordsOfUser(@PathVariable(value = "userId")Long userId){
-        /*List<TimeRecord> timeRecord = null;
-        timeRecord = timeRecordServices.findTimeRecordsOfUser(userId);*/
 
         return timeRecordServices.findTimeRecordsOfUser(userId);
     }
@@ -74,31 +78,18 @@ public class TimeRecordController {
     @GetMapping(path = "/{id}")
     private TimeRecord getTimeRecord(@PathVariable(value = "id")Long id) throws ElementNotFoundException {
 
-        TimeRecord timeRecord = null;
-
-        timeRecord = timeRecordServices.findTimeRecord(id);
-
-        return timeRecord;
+        return timeRecordServices.findTimeRecord(id);
     }
 
 
     @PostMapping
-    private TimeRecord postNewTimeRecord(@Valid @RequestBody TimeRecord newTimeRecord){
+    private TimeRecord postNewTimeRecord(@Valid @RequestBody TimeRecord newTimeRecord) throws DuplicateException {
 
-        TimeRecord savedTimeRecord = null;
-
-        try {
-
-            savedTimeRecord = timeRecordServices.addTimeRecord(newTimeRecord);
-        } catch (DuplicateException e) {
-            e.printStackTrace();
-        }
-
-        return savedTimeRecord;
+        return timeRecordServices.addTimeRecord(newTimeRecord);
     }
 
     @PatchMapping(path ="/{id}/update")
-    private TimeRecord updateTimeRecord(@PathVariable(name = "id") Long id, @RequestParam TimeRecord updatedTimeRecord) throws ElementNotFoundException {
+    private TimeRecord updateTimeRecord(@PathVariable(name = "id") Long id, @RequestBody TimeRecord updatedTimeRecord) throws ElementNotFoundException {
 
         return timeRecordServices.updateTimeRecord(id, updatedTimeRecord);
     }

@@ -11,6 +11,13 @@ import java.time.format.ResolverStyle;
 
 public class helper {
 
+    public static void main(String[] args) {
+        LocalDate localDate = LocalDate.now();
+
+        System.out.println(localDate);
+
+    }
+
     //TODO this class is to complete
     /*LocalDate localDate = LocalDate.now();
 
