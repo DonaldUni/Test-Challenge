@@ -5,13 +5,16 @@ import TimeRecordMicroservice.Donald.exceptions.ElementNotFoundException;
 import TimeRecordMicroservice.Donald.exceptions.NotAllowedOperationException;
 import TimeRecordMicroservice.Donald.model.TimeRecord;
 import TimeRecordMicroservice.Donald.model.TimeType;
+import TimeRecordMicroservice.Donald.model.User;
 import TimeRecordMicroservice.Donald.model.Vacation;
 import TimeRecordMicroservice.Donald.repository.TimeRecordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
-
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -118,9 +121,51 @@ public class TimeRecordServices {
     //TODO to fill in
     public List<TimeRecord> addTimeRecordsForRequestedVacation(Vacation vacation){
 
-        timeRecordRepository.findAll();
+        LocalTime defaultStartHourAtWork = LocalTime.of(8,0);
+        LocalTime defaultEndHourAtWork = LocalTime.parse("17:00"); // just to play with LocalTime Methods
+        List<TimeRecord> timeRecordsOfVacation = new ArrayList<>();
 
-        return null;
+        //take Vacation Attribut
+        LocalDate startDateOfVacation = vacation.getStartDate();
+        LocalDate endDateOfVacation = vacation.getEndDate();
+        LocalTime startingAt = vacation.getStartingAt();
+        LocalTime endingAt = vacation.getEndingAt();
+        boolean finalised = false;
+        int startDayOfVacation = startDateOfVacation.getDayOfMonth();
+        int endDayOfVacation  = endDateOfVacation.getDayOfMonth();
+
+
+        int numberOfVacationDay = endDayOfVacation - startDayOfVacation + 1;
+
+        for (int i = 0; i < numberOfVacationDay; i++) {
+
+            TimeRecord timeRecord;
+            User user = new User();
+            LocalDate date;
+
+            if (i==0){
+                date = startDateOfVacation;
+                timeRecord = new TimeRecord(user, date, defaultStartHourAtWork,  startingAt, TimeType.ON_VACATION, finalised);
+                timeRecordsOfVacation.add(timeRecord);
+                continue;
+            }
+
+            if ( i < numberOfVacationDay-1){
+                date = startDateOfVacation.plusDays(i);
+                timeRecord = new TimeRecord(user, date, defaultStartHourAtWork,  defaultEndHourAtWork, TimeType.ON_VACATION, finalised);
+                timeRecordsOfVacation.add(timeRecord);
+                continue;
+            }
+
+            if ( i == numberOfVacationDay-1){
+                date = endDateOfVacation;
+                timeRecord = new TimeRecord(user, date, defaultStartHourAtWork,  endingAt, TimeType.ON_VACATION, finalised);
+                timeRecordsOfVacation.add(timeRecord);
+
+            }
+        }
+
+        return timeRecordsOfVacation;
     }
 
     public List<TimeRecord> approveVacationTimeRecord(Long id){

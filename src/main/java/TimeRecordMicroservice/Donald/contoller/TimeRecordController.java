@@ -83,15 +83,27 @@ public class TimeRecordController {
 
 
     @PostMapping
-    private TimeRecord postNewTimeRecord(@Valid @RequestBody TimeRecord newTimeRecord) throws DuplicateException {
+    private TimeRecord postNewTimeRecord( @RequestBody TimeRecord newTimeRecord) throws DuplicateException {
 
-        return timeRecordServices.addTimeRecord(newTimeRecord);
+        if (newTimeRecord == null){
+
+            return null;
+        }else {
+
+            return timeRecordServices.addTimeRecord(newTimeRecord);
+        }
     }
 
     @PatchMapping(path ="/{id}/update")
     private TimeRecord updateTimeRecord(@PathVariable(name = "id") Long id, @RequestBody TimeRecord updatedTimeRecord) throws ElementNotFoundException {
 
-        return timeRecordServices.updateTimeRecord(id, updatedTimeRecord);
+        if (updatedTimeRecord == null){
+
+            return null;
+        }else {
+
+            return timeRecordServices.updateTimeRecord(id, updatedTimeRecord);
+        }
     }
 
     @PutMapping(path ="/{id}/finalize")
@@ -101,14 +113,19 @@ public class TimeRecordController {
     }
 
     @PostMapping(path ="/vacation")
-    private List<TimeRecord> requestVacation(Vacation vacation){
+    private List<TimeRecord> requestVacation( @RequestBody Vacation vacation){
 
-        return timeRecordServices.addTimeRecordsForRequestedVacation(vacation);
+        if (vacation == null){
+
+            return null ;
+        }else {
+
+            return timeRecordServices.addTimeRecordsForRequestedVacation(vacation);
+        }
     }
 
-    //TODO  bookkeeperVacationTimeRecords to fill in
     @PatchMapping(path = "/vacation")
-    private TimeRecord bookkeeperVacationTimeRecords(Long id, boolean status){
+    private TimeRecord bookkeeperVacationTimeRecords( @RequestParam Long id, @RequestParam boolean status){
 
         if (status){
 
