@@ -118,12 +118,12 @@ public class TimeRecordServices {
         }
     }
 
-    //TODO to fill in
-    public List<TimeRecord> addTimeRecordsForRequestedVacation(Vacation vacation){
+    public List<TimeRecord> addTimeRecordsForRequestedVacation(Long userId, Vacation vacation){
 
         LocalTime defaultStartHourAtWork = LocalTime.of(8,0);
         LocalTime defaultEndHourAtWork = LocalTime.parse("17:00"); // just to play with LocalTime Methods
         List<TimeRecord> timeRecordsOfVacation = new ArrayList<>();
+        List<TimeRecord> savedTimeRecordsOfVacation = new ArrayList<>();
 
         //take Vacation Attribut
         LocalDate startDateOfVacation = vacation.getStartDate();
@@ -140,7 +140,7 @@ public class TimeRecordServices {
         for (int i = 0; i < numberOfVacationDay; i++) {
 
             TimeRecord timeRecord;
-            User user = new User();
+            User user = new User(userId);
             LocalDate date;
 
             if (i==0){
@@ -165,17 +165,61 @@ public class TimeRecordServices {
             }
         }
 
-        return timeRecordsOfVacation;
+        for (TimeRecord timeRecord: timeRecordsOfVacation) {
+
+            timeRecord = timeRecordRepository.save(timeRecord);
+            savedTimeRecordsOfVacation.add(timeRecord);
+        }
+
+        return savedTimeRecordsOfVacation;
     }
 
-    public List<TimeRecord> approveVacationTimeRecord(Long id){
+    public TimeRecord approveVacationTimeRecord(Long id, boolean status) throws ElementNotFoundException {
+
+        TimeRecord timeRecord1;
+
+        Optional<TimeRecord> optionalTimeRecord = timeRecordRepository.findById(id);
+
+        if (optionalTimeRecord.isPresent()){
+
+            TimeRecord timeRecord = optionalTimeRecord.get();
+
+            if (timeRecord.getType().equals(TimeType.ON_VACATION) && !timeRecord.isFinalized()){
+                if (status){
+                    timeRecord.setFinalized(true);
+                    timeRecord1 = timeRecordRepository.save(timeRecord);
+                    return timeRecord1;
+                }
+            }
+         }else{
+
+            throw new ElementNotFoundException(getErrorNotFoundMessage(id));
+        }
 
         return null;
     }
 
-    public void rejectVacationTimeRecord(Long id){
+    public TimeRecord rejectVacationTimeRecord(Long id, boolean status) throws ElementNotFoundException {
 
+        Optional<TimeRecord> optionalTimeRecord = timeRecordRepository.findById(id);
 
+        if (optionalTimeRecord.isPresent()){
+
+            TimeRecord timeRecord = optionalTimeRecord.get();
+
+            if (timeRecord.getType().equals(TimeType.ON_VACATION) && ! timeRecord.isFinalized()){
+                if (!status){
+
+                    timeRecordRepository.delete(timeRecord);
+                    return timeRecord;
+                }
+            }
+        }else{
+
+            throw new ElementNotFoundException(getErrorNotFoundMessage(id));
+        }
+
+        return null;
     }
 
     //Error Methode

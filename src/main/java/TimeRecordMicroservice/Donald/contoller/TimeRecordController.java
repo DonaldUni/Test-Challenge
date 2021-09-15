@@ -24,7 +24,7 @@ public class TimeRecordController {
     private TimeRecordServices timeRecordServices;
 
     @GetMapping
-    private List<TimeRecord> getAllTimeRecords(@RequestParam Optional<TimeType> type, @RequestParam Optional<Boolean> finalized){ // TODO verify the availability with Postman
+    private List<TimeRecord> getAllTimeRecords(@RequestParam Optional<TimeType> type, @RequestParam Optional<Boolean> finalized){
 
         boolean isTypePresent = false;
         boolean isFinalisedPresent = false;
@@ -68,7 +68,6 @@ public class TimeRecordController {
         return resultTimeRecords;
     }
 
-    //TODO verify the availability with Postman, when the id do not exist, the result has to be null
     @GetMapping(path = "/of/{userId}")
     private List<TimeRecord> getTimeRecordsOfUser(@PathVariable(value = "userId")Long userId){
 
@@ -113,30 +112,28 @@ public class TimeRecordController {
     }
 
     @PostMapping(path ="/vacation")
-    private List<TimeRecord> requestVacation( @RequestBody Vacation vacation){
+    private List<TimeRecord> requestVacation( @RequestParam(name = "userId") Long userId, @RequestBody Vacation vacation){
 
         if (vacation == null){
 
             return null ;
         }else {
 
-            return timeRecordServices.addTimeRecordsForRequestedVacation(vacation);
+            return timeRecordServices.addTimeRecordsForRequestedVacation(userId, vacation);
         }
     }
 
     @PatchMapping(path = "/vacation")
-    private TimeRecord bookkeeperVacationTimeRecords( @RequestParam Long id, @RequestParam boolean status){
+    private TimeRecord bookkeeperVacationTimeRecords(@RequestParam Long id, @RequestParam boolean status) throws ElementNotFoundException {
 
         if (status){
 
-            timeRecordServices.approveVacationTimeRecord(id);
+            return timeRecordServices.approveVacationTimeRecord(id, status);
 
         }else {
 
-            timeRecordServices.rejectVacationTimeRecord(id);
+            return timeRecordServices.rejectVacationTimeRecord(id, status);
         }
-
-        return null;
     }
 
 }

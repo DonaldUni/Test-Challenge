@@ -12,7 +12,7 @@ import java.util.Objects;
 public class TimeRecord {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     private Long id;
 
     /*@ManyToOne(cascade = CascadeType.PERSIST)

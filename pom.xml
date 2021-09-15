@@ -12,7 +12,7 @@
 	<artifactId>Donald</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>TimeRecord-Microservice-Donald</name>
-	<description>Microservice TimeRecord </description>
+	<description>Microservice TimeRecord von Donald für Frontend</description>
 	<properties>
 		<java.version>16</java.version>
 		<testcontainers.version>1.15.3</testcontainers.version>
